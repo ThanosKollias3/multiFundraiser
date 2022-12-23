@@ -29,7 +29,7 @@ const Deposit = () => {
     setDeposit(0)
   }
   useEffect(() => {
-    if (fundraiser && account) {
+    if (fundraiser && account && fundAddress) {
       loadContractBalance(fundraiser, fundAddress, dispatch)
     }
   }, [

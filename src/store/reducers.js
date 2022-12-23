@@ -32,12 +32,26 @@ const DEFAULT_FUNDRAISER_STATE = {
     transactionType: "",
     isSuccessfull: false,
   },
-  Deposit: {
+  AllDeposits: {
     data: [],
   },
+  AllIncreases: {
+    loaded: false,
+    data: [],
+  },
+  AllFundraisers: {
+    loaded: false,
+    data: [],
+  },
+
+  AllTransfers: {
+    data: [],
+  },
+
   events: [],
 }
 export const fundraiser = (state = DEFAULT_FUNDRAISER_STATE, action) => {
+  let data, index
   switch (action.type) {
     case "FUNDRAISER_LOADED":
       return {
@@ -45,12 +59,87 @@ export const fundraiser = (state = DEFAULT_FUNDRAISER_STATE, action) => {
         loaded: true,
         contract: action.fundraiser,
       }
+    case "ALL_INCREASERS_LOADED":
+      return {
+        ...state,
+        AllIncreases: {
+          loaded: true,
+          data: action.AllIncreases,
+        },
+      }
 
+    case "ALL_FUNDRAISERS_LOADED":
+      return {
+        ...state,
+        AllFundraisers: {
+          loaded: true,
+          data: action.AllFundraisers,
+        },
+      }
+
+    case "ALL_TRANSFERS_LOADED":
+      return {
+        ...state,
+        AllTransfers: {
+          loaded: true,
+          data: action.AllTransfers,
+        },
+      }
+
+    case "PRICE_INCREASER_LOADED_REQUEST":
+      return {
+        ...state,
+        transaction: {
+          transactionType: "Price Increase",
+          isPending: true,
+          isSuccessfull: false,
+          alertSeperator: 1,
+        },
+        transferInProgress: true,
+      }
+    case "PRICE_INCREASER_LOADED_SUCCESS":
+      index = state.AllIncreases.data.findIndex(
+        (PriceIncreaser) =>
+          PriceIncreaser.id.toString() === action.PriceIncreaser.id.toString()
+      )
+      if (index === -1) {
+        data = [...state.AllIncreases.data, action.PriceIncreaser]
+      } else {
+        data = state.AllIncreases.data
+      }
+      return {
+        ...state,
+        transferInProgress: false,
+        AllFundraisers: {
+          ...state.AllIncreases,
+          data,
+        },
+        transaction: {
+          transactionType: "Price Increase",
+          isPending: false,
+          isSuccessfull: true,
+          alertSeperator: 1,
+        },
+
+        events: [action.event, ...state.events],
+      }
+    case "PRICE_INCREASER_LOADED_FAIL":
+      return {
+        ...state,
+        transaction: {
+          transactionType: "Price Increase",
+          isPending: false,
+          isSuccessfull: false,
+          isError: true,
+          alertSeperator: 1,
+        },
+        transferInProgress: false,
+      }
     case "FUNDRAISER_STARTER_LOADED_REQUEST":
       return {
         ...state,
         transaction: {
-          transactransactionTypetion: "Fundraiser Starter",
+          transactionType: "Fundraiser Starter",
           isPending: true,
           isSuccessfull: false,
           alertSeperator: 1,
@@ -58,15 +147,28 @@ export const fundraiser = (state = DEFAULT_FUNDRAISER_STATE, action) => {
         transferInProgress: true,
       }
     case "FUNDRAISER_STARTER_LOADED_SUCCESS":
+      index = state.AllFundraisers.data.findIndex(
+        (NewFundraiser) =>
+          NewFundraiser.id.toString() === action.NewFundraiser.id.toString()
+      )
+      if (index === -1) {
+        data = [...state.AllFundraisers.data, action.NewFundraiser]
+      } else {
+        data = state.AllFundraisers.data
+      }
       return {
         ...state,
+        transferInProgress: false,
+        AllFundraisers: {
+          ...state.AllFundraisers,
+          data,
+        },
         transaction: {
           transactionType: "Fundraiser Starter",
           isPending: false,
           isSuccessfull: true,
           alertSeperator: 1,
         },
-        transferInProgress: false,
 
         events: [action.event, ...state.events],
       }
@@ -93,6 +195,7 @@ export const fundraiser = (state = DEFAULT_FUNDRAISER_STATE, action) => {
         },
         transferInProgress: true,
       }
+
     case "DEPOSIT_LOADED_SUCCESS":
       return {
         ...state,
@@ -103,6 +206,11 @@ export const fundraiser = (state = DEFAULT_FUNDRAISER_STATE, action) => {
           alertSeperator: 3,
         },
         transferInProgress: false,
+        AllDeposits: {
+          loaded: true,
+          ...state.AllDeposits,
+          data: [...state.AllDeposits.data, action.deposit],
+        },
         events: [action.event, ...state.events],
       }
     case "DEPOSIT_LOADED_FAIL":
@@ -116,40 +224,7 @@ export const fundraiser = (state = DEFAULT_FUNDRAISER_STATE, action) => {
           alertSeperator: 3,
         },
       }
-    case "INCREASER_LOADED_REQUEST":
-      return {
-        ...state,
-        transaction: {
-          transactionType: "Increase The Fundraiser",
-          isPending: true,
-          isSuccessfull: false,
-          alertSeperator: 2,
-        },
-        increaseraction: true,
-      }
-    case "INCREASER_LOADED_SUCCESS":
-      return {
-        ...state,
-        transaction: {
-          transactionType: "Increase The Fundraiser",
-          isPending: false,
-          isSuccessfull: true,
-          alertSeperator: 2,
-        },
-        increaseraction: false,
-      }
-    case "INCREASER_LOADED_FAIL":
-      return {
-        ...state,
-        transaction: {
-          transactionType: "Increase The Fundraiser",
-          isPending: false,
-          isSuccessfull: false,
-          isError: true,
-          alertSeperator: 2,
-        },
-        increaseraction: false,
-      }
+
     case "CONTRACT_BALANCE_LOADED":
       return {
         ...state,
@@ -177,6 +252,16 @@ export const fundraiser = (state = DEFAULT_FUNDRAISER_STATE, action) => {
         moneytransfer: true,
       }
     case "TRANSFER_LOADED_SUCCESS":
+      index = state.AllTransfers.data.findIndex(
+        (FundraiserCompleted) =>
+          FundraiserCompleted._name.toString() ===
+          action.FundraiserCompleted._name.toString()
+      )
+      if (index === -1) {
+        data = [...state.AllTransfers.data, action.FundraiserCompleted]
+      } else {
+        data = state.AllTransfers.data
+      }
       return {
         ...state,
         transaction: {
@@ -185,6 +270,11 @@ export const fundraiser = (state = DEFAULT_FUNDRAISER_STATE, action) => {
           isSuccessfull: true,
           alertSeperator: 4,
         },
+        AllTransfers: {
+          ...state.AllTransfers,
+          data,
+        },
+        events: [action.event, ...state.events],
         moneytransfer: false,
       }
     case "TRANSFER_LOADED_FAIL":

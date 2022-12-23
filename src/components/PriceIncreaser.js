@@ -6,6 +6,7 @@ const PriceIncreaser = () => {
   const [increaser, setIncreaser] = useState(0)
   const dispatch = useDispatch()
   const provider = useSelector((state) => state.provider.connection)
+
   const fundraiser = useSelector((state) => state.fundraiser.contract)
 
   const amountHandler = (e) => {

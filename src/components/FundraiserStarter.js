@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { loadStarter } from "../store/interactions"
 
@@ -7,21 +7,10 @@ const FundraiserStarter = () => {
   const [fundraiserName, setFundraiserName] = useState("")
 
   const dispatch = useDispatch()
+
   const provider = useSelector((state) => state.provider.connection)
   const fundraiser = useSelector((state) => state.fundraiser.contract)
   const account = useSelector((state) => state.provider.account)
-  const getPrice = useSelector((state) => state.fundraiser.FundraiserPrice)
-  const getFundraiserName = useSelector(
-    (state) => state.fundraiser.FundraiserName
-  )
-  const transferInProgress = useSelector(
-    (state) => state.fundraiser.transferInProgress
-  )
-  const increaseraction = useSelector(
-    (state) => state.fundraiser.increaseraction
-  )
-  const moneytransfer = useSelector((state) => state.fundraiser.moneytransfer)
-
   const amountHandler = (e) => {
     setStarter(e.target.value)
   }
@@ -32,7 +21,7 @@ const FundraiserStarter = () => {
   const starterHandler = (e) => {
     e.preventDefault()
     loadStarter(provider, fundraiser, fundraiserName, starter, dispatch)
-    console.log(fundraiserName)
+
     setStarter(0)
     setFundraiserName("")
   }
@@ -41,19 +30,7 @@ const FundraiserStarter = () => {
     <div className="component exchange__transfers">
       <div className="component__header flex-center">
         <div className="exchange__transfers--form">
-          <div className="flex-between">
-            <p>
-              <small>Fundraiser Name:</small>
-              <br />
-              {getFundraiserName}
-            </p>
-
-            <p>
-              <small>Fundraiser Price:</small>
-              <br />
-              {getPrice}
-            </p>
-          </div>
+          <div className="flex-between"></div>
         </div>
         <form onSubmit={(e) => starterHandler(e)}>
           <label htmlFor="Starter">
@@ -63,7 +40,7 @@ const FundraiserStarter = () => {
             type="text"
             id="Starter"
             placeholder="Fundraiser Name"
-            value={fundraiserName === " " ? "" : fundraiserName}
+            value={fundraiserName === "" ? "" : fundraiserName}
             onChange={(e) => nameHandler(e)}
           />
           <input

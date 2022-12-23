@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux"
 import { useState } from "react"
-import { loadTransfer, loadContractBalance } from "../store/interactions"
+import { loadTransfer } from "../store/interactions"
 
 const Transfer = () => {
   const provider = useSelector((state) => state.provider.connection)
@@ -16,7 +16,6 @@ const Transfer = () => {
     e.preventDefault()
     loadTransfer(provider, fundraiser, transferAddress, dispatch)
 
-    loadContractBalance(fundraiser, dispatch)
     setTransferAddress("")
   }
 
@@ -25,7 +24,7 @@ const Transfer = () => {
       <div className="component__header flex-center">
         <form onSubmit={(e) => transferHandler(e)}>
           <label htmlFor="Address">
-            {" "}
+            {""}
             Transfer The Money To The Chosen Oraganization
           </label>
           <input

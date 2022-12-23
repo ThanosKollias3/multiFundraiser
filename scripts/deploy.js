@@ -1,9 +1,7 @@
-const { ethers } = require("hardhat")
-
 async function main() {
   const Fundraisers = await ethers.getContractFactory("Fundraisers")
   const accounts = await ethers.getSigners()
-  const fundraisers = await Fundraisers.deploy(accounts[1].address)
+  const fundraisers = await Fundraisers.deploy(accounts[0].address)
   await fundraisers.deployed()
 
   console.log(` Contract Deployed To: ${fundraisers.address}`)
@@ -12,7 +10,9 @@ async function main() {
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
-main().catch((error) => {
-  console.error(error)
-  process.exitCode = 1
-})
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error)
+    process.exit(1)
+  })

@@ -30,27 +30,30 @@ export const loadFundraiser = async (provider, address, dispatch) => {
   dispatch({ type: "FUNDRAISER_LOADED", fundraiser })
   return fundraiser
 }
-export const loadContractBalance = async (fundraiser, address, dispatch) => {
+export const loadContractBalance = async (fundraiser, Address, dispatch) => {
   let balance
-  balance = ethers.utils.formatUnits(await fundraiser.BalanceOf(address), 18)
+
+  balance = ethers.utils.formatUnits(await fundraiser.BalanceOf(Address), 18)
 
   dispatch({ type: "CONTRACT_BALANCE_LOADED", balance })
-  return balance
 }
 
 export const loadStarter = async (
   provider,
   fundraiser,
-  Name,
+  fundraiserName,
   amount,
   dispatch
 ) => {
   let starter
   const signer = provider.getSigner()
-  const Amount = ethers.utils.parseEther(amount)
+
+  const Amount = ethers.utils.parseUnits(amount.toString(), 18)
   dispatch({ type: "FUNDRAISER_STARTER_LOADED_REQUEST" })
   try {
-    starter = await fundraiser.connect(signer).StartNewFund(Name, Amount)
+    starter = await fundraiser
+      .connect(signer)
+      .StartNewFund(fundraiserName, Amount)
 
     await starter.wait()
     dispatch({ type: "FUNDRAISER_STARTER_LOADED_SUCCESS" })
@@ -93,28 +96,12 @@ export const loadTransfer = async (
   const signer = await provider.getSigner()
   dispatch({ type: "TRANSFER_LOADED_REQUEST" })
   try {
-    transaction = await fundraiser.connect(signer).TransferTo(addressName)
+    transaction = await fundraiser.connect(signer).transferTo(addressName)
     await transaction.wait()
     dispatch({ type: "TRANSFER_LOADED_SUCCESS" })
   } catch (error) {
     dispatch({ type: "TRANSFER_LOADED_FAIL" })
   }
-}
-export const subscribeToEvents = (fundraiser, dispatch) => {
-  fundraiser.on("NewFundraiser", (_name, _amount, event) => {
-    dispatch({
-      type: "FUNDRAISER_STARTER_LOADED_SUCCES",
-      event,
-    })
-  })
-  fundraiser.on("Deposit", (_depositAmount, event) => {
-    const deposit = event.args
-    dispatch({ type: "DEPOSIT_LOADED_SUCCESS", deposit, event })
-  })
-  fundraiser.on("Increase", (newNumber, event) => {
-    const _newNumber = event.args
-    dispatch({ type: "DEPOSIT_LOADED_SUCCESS", _newNumber, event })
-  })
 }
 export const loadIncreaser = async (
   provider,
@@ -133,4 +120,57 @@ export const loadIncreaser = async (
   } catch (error) {
     dispatch({ type: "INCREASER_LOADED_FAIL" })
   }
+}
+export const loadAllEvents = async (provider, fundraiser, dispatch) => {
+  const block = await provider.getBlockNumber()
+
+  const funds = await fundraiser.queryFilter("NewFundraiser", 0, block)
+  const AllFundraisers = funds.map((event) => event.args)
+  dispatch({ type: "ALL_FUNDRAISERS_LOADED", AllFundraisers })
+
+  const increases = await fundraiser.queryFilter("PriceIncreaser", 0, block)
+  const AllIncreases = increases.map((event) => event.args)
+  dispatch({ type: "ALL_INCREASERS_LOADED", AllIncreases })
+
+  const transfer = await fundraiser.queryFilter("FundraiserCompleted", 0, block)
+  const AllTransfers = transfer.map((event) => event.args)
+  dispatch({ type: "ALL_TRANSFERS_LOADED", AllTransfers })
+}
+export const subscribeToEvents = (fundraiser, dispatch) => {
+  fundraiser.on(
+    "NewFundraiser",
+    (id, _name, _amount, _fundraiserCreator, event) => {
+      const NewFundraiser = event.args
+      dispatch({
+        type: "FUNDRAISER_STARTER_LOADED_SUCCESS",
+        NewFundraiser,
+        event,
+      })
+    }
+  )
+  fundraiser.on(
+    "PriceIncreaser",
+    (id, _name, _amount, _fundraiserCreator, event) => {
+      const PriceIncreaser = event.args
+
+      dispatch({
+        type: "PRICE_INCREASER_LOADED_SUCCESS",
+        PriceIncreaser,
+        event,
+      })
+    }
+  )
+  fundraiser.on("Deposit", (_depositAmount, event) => {
+    const deposit = event.args
+
+    dispatch({ type: "DEPOSIT_LOADED_SUCCESS", deposit, event })
+  })
+
+  fundraiser.on(
+    "FundraiserCompleted",
+    (_name, _amount, _fundrdaiserCreator, event) => {
+      const FundraiserCompleted = event.args
+      dispatch({ type: "TRANSFER_LOADED_SUCCESS", FundraiserCompleted, event })
+    }
+  )
 }

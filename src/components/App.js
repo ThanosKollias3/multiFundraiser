@@ -6,15 +6,18 @@ import {
   loadAccount,
   loadFundraiser,
   subscribeToEvents,
+  loadAllEvents,
 } from "../store/interactions"
 import FundraiserStarter from "./FundraiserStarter"
 import Navbar from "./Navbar"
 import Deposit from "./Deposit"
 import TransferMoney from "./TransferMoney"
+
 import Alert from "./Alert.js"
 
 import config from "../config.json"
 import PriceIncreaser from "./PriceIncreaser"
+import FundraiserSelectorBook from "./FundraiserSelectorBook"
 
 function App() {
   const dispatch = useDispatch()
@@ -36,6 +39,7 @@ function App() {
     )
 
     console.log(fundraiser)
+    loadAllEvents(provider, fundraiser, dispatch)
     subscribeToEvents(fundraiser, dispatch)
   }
   useEffect(() => {
@@ -52,10 +56,13 @@ function App() {
         <section className="exchange__section--right grid">
           <FundraiserStarter />
         </section>
+
         <section className="exchange__section--left grid">
           <PriceIncreaser />
         </section>
-
+        <section className="exchange__section--right grid">
+          <FundraiserSelectorBook />
+        </section>
         <section className="exchange__section--left grid">
           <TransferMoney />
         </section>
