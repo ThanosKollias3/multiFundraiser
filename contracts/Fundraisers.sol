@@ -85,7 +85,10 @@ contract Fundraisers {
             msg.sender == ownersAddress[msg.sender].fundraiserCreator,
             "Only the Creator of The Fundraiser Can Do That"
         );
-        _to.transfer(ownersAddress[msg.sender].priceNeeded);
+        (bool callSuccess, ) = payable(_to).call{
+            value: ownersAddress[msg.sender].priceNeeded
+        }("");
+        require(callSuccess, "Transfer Failed");
         ownersAddress[msg.sender].Balance =
             ownersAddress[msg.sender].Balance -
             ownersAddress[msg.sender].priceNeeded;
