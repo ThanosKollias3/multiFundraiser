@@ -56,7 +56,6 @@ export const loadStarter = async (
       .StartNewFund(fundraiserName, Amount)
 
     await starter.wait()
-    dispatch({ type: "FUNDRAISER_STARTER_LOADED_SUCCESS" })
   } catch (error) {
     dispatch({ type: "FUNDRAISER_STARTER_LOADED_FAIL" })
   }
@@ -81,7 +80,6 @@ export const loadDeposit = async (
       value: Amount,
     })
     await transaction.wait()
-    dispatch({ type: "DEPOSIT_LOADED_SUCCESS" })
   } catch (error) {
     dispatch({ type: "DEPOSIT_LOADED_FAIL" })
   }
@@ -116,7 +114,6 @@ export const loadIncreaser = async (
   try {
     transaction = await fundraiser.connect(signer).PriceIncrease(amount)
     await transaction.wait()
-    dispatch({ type: "INCREASER_LOADED_SUCCESS" })
   } catch (error) {
     dispatch({ type: "INCREASER_LOADED_FAIL" })
   }
@@ -135,6 +132,10 @@ export const loadAllEvents = async (provider, fundraiser, dispatch) => {
   const transfer = await fundraiser.queryFilter("FundraiserCompleted", 0, block)
   const AllTransfers = transfer.map((event) => event.args)
   dispatch({ type: "ALL_TRANSFERS_LOADED", AllTransfers })
+
+  const depositor = await fundraiser.queryFilter("Deposit", 0, block)
+  const AllDeposits = depositor.map((event) => event.args)
+  dispatch({ type: "All_DEPOSITS_LOADED", AllDeposits })
 }
 export const subscribeToEvents = (fundraiser, dispatch) => {
   fundraiser.on(
@@ -160,7 +161,7 @@ export const subscribeToEvents = (fundraiser, dispatch) => {
       })
     }
   )
-  fundraiser.on("Deposit", (_depositAmount, event) => {
+  fundraiser.on("Deposit", (_depositAmount, sender, _name, event) => {
     const deposit = event.args
 
     dispatch({ type: "DEPOSIT_LOADED_SUCCESS", deposit, event })

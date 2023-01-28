@@ -1,6 +1,6 @@
-import { useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { loadIncreaser } from "../store/interactions"
+import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { loadIncreaser } from '../store/interactions'
 
 const PriceIncreaser = () => {
   const [increaser, setIncreaser] = useState(0)
@@ -29,7 +29,7 @@ const PriceIncreaser = () => {
             type="text"
             id="Increaser"
             placeholder="0.000"
-            value={increaser === 0 ? "" : increaser}
+            value={increaser === 0 ? '' : increaser}
             onChange={(e) => amountHandler(e)}
           />
 

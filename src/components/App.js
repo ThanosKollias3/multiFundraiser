@@ -18,6 +18,7 @@ import Alert from "./Alert.js"
 import config from "../config.json"
 import PriceIncreaser from "./PriceIncreaser"
 import FundraiserSelectorBook from "./FundraiserSelectorBook"
+import DepositSelectorBook from "./DepositSelectorBook"
 
 function App() {
   const dispatch = useDispatch()
@@ -65,6 +66,9 @@ function App() {
         </section>
         <section className="exchange__section--left grid">
           <TransferMoney />
+        </section>
+        <section className="exchange__section--right grid">
+          <DepositSelectorBook />
         </section>
       </main>
 

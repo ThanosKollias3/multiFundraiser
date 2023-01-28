@@ -10,7 +10,7 @@ const FundraiserStarter = () => {
 
   const provider = useSelector((state) => state.provider.connection)
   const fundraiser = useSelector((state) => state.fundraiser.contract)
-  const account = useSelector((state) => state.provider.account)
+
   const amountHandler = (e) => {
     setStarter(e.target.value)
   }

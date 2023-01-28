@@ -2,10 +2,10 @@
 pragma solidity ^0.8.9;
 
 contract Fundraisers {
-    address public contranctOwner;
+    address public immutable i_contractowner;
 
-    constructor(address payable _contractOwner) {
-        contranctOwner = _contractOwner;
+    constructor() {
+        i_contractowner = msg.sender;
     }
 
     uint256 public fundraiserscount;
@@ -25,7 +25,7 @@ contract Fundraisers {
         uint256 _amount,
         address _fundraiserCreator
     );
-    event Deposit(uint256 _depositAmount);
+    event Deposit(uint256 _depositAmount, address indexed sender, string _name);
 
     event FundraiserCompleted(
         string _name,
@@ -41,8 +41,21 @@ contract Fundraisers {
     }
 
     function deposit(address _ownersAddress) public payable {
+        require(
+            ownersAddress[_ownersAddress].Balance <
+                ownersAddress[_ownersAddress].priceNeeded,
+            "The Fundraiser has reached the required Price"
+        );
+        require(
+            msg.value <= ownersAddress[_ownersAddress].priceNeeded,
+            "Can't deposit more than the Fundraiser requires"
+        );
         ownersAddress[_ownersAddress].Balance += msg.value;
-        emit Deposit(msg.value);
+        emit Deposit(
+            msg.value,
+            msg.sender,
+            ownersAddress[_ownersAddress].FundraiserName
+        );
     }
 
     function PriceIncrease(uint256 _newPrice) public {
@@ -60,6 +73,7 @@ contract Fundraisers {
         );
     }
 
+    //136257
     function StartNewFund(string memory _name, uint256 _price) public {
         require(
             !ownersAddress[msg.sender].isFundraiser,
@@ -88,7 +102,15 @@ contract Fundraisers {
         (bool callSuccess, ) = payable(_to).call{
             value: ownersAddress[msg.sender].priceNeeded
         }("");
-        require(callSuccess, "Transfer Failed");
+        require(
+            callSuccess,
+            "Transfer Failed,The Fundraiser did not reache the required Price"
+        );
+        emit FundraiserCompleted(
+            ownersAddress[msg.sender].FundraiserName,
+            ownersAddress[msg.sender].priceNeeded,
+            ownersAddress[msg.sender].fundraiserCreator
+        );
         ownersAddress[msg.sender].Balance =
             ownersAddress[msg.sender].Balance -
             ownersAddress[msg.sender].priceNeeded;
@@ -98,11 +120,6 @@ contract Fundraisers {
             0,
             0x0000000000000000000000000000000000000000,
             false
-        );
-        emit FundraiserCompleted(
-            ownersAddress[msg.sender].FundraiserName,
-            ownersAddress[msg.sender].priceNeeded,
-            ownersAddress[msg.sender].fundraiserCreator
         );
     }
 }

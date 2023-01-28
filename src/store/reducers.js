@@ -36,11 +36,9 @@ const DEFAULT_FUNDRAISER_STATE = {
     data: [],
   },
   AllIncreases: {
-    loaded: false,
     data: [],
   },
   AllFundraisers: {
-    loaded: false,
     data: [],
   },
 
@@ -85,7 +83,14 @@ export const fundraiser = (state = DEFAULT_FUNDRAISER_STATE, action) => {
           data: action.AllTransfers,
         },
       }
-
+    case "All_DEPOSITS_LOADED":
+      return {
+        ...state,
+        AllDeposits: {
+          loaded: true,
+          data: action.AllDeposits,
+        },
+      }
     case "PRICE_INCREASER_LOADED_REQUEST":
       return {
         ...state,

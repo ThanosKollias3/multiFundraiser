@@ -6,6 +6,8 @@ const AllFundraisers = (state) =>
   get(state, "fundraiser.AllFundraisers.data", [])
 
 const AllIncreases = (state) => get(state, "fundraiser.AllIncreases.data", [])
+const AllDeposits = (state) => get(state, "fundraiser.AllDeposits.data", [])
+
 const finalFundraiser = (state) => {
   const all = AllFundraisers(state)
   const Increases = AllIncreases(state)
@@ -79,5 +81,34 @@ const decorateIncrease = (increase) => {
     _name: Name,
     _amount: ethers.utils.formatUnits(Amount, "ether"),
     _fundraiserCreator: fundraiserCreator,
+  }
+}
+
+export const DepositSelector = createSelector(AllDeposits, (deposit) => {
+  if (!deposit) {
+  }
+  deposit = decorateDepositBook(deposit)
+  console.log(deposit)
+  return deposit
+})
+
+const decorateDepositBook = (deposit) => {
+  return deposit.map((deposits) => {
+    deposits = decorateDeposit(deposits)
+
+    return deposits
+  })
+}
+const decorateDeposit = (deposits) => {
+  let DepositAmount, Sender, Name
+  DepositAmount = deposits._depositAmount
+  Name = deposits._name
+  Sender = deposits.sender
+
+  return {
+    ...deposits,
+    _depositAmount: ethers.utils.formatUnits(DepositAmount, "ether"),
+    _name: Name,
+    sender: Sender,
   }
 }

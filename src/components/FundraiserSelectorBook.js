@@ -34,18 +34,6 @@ const FundraiserSelectorBook = () => {
                       )
                     })}
                 </tbody>
-                <tbody>
-                  {increaserBook &&
-                    increaserBook.map((increases, index) => {
-                      return (
-                        <tr key={index}>
-                          <td> {increases._name}</td>
-                          <td>{increases._amount}</td>
-                          <td>{increases._fundraiserCreator}</td>
-                        </tr>
-                      )
-                    })}
-                </tbody>
               </table>
             )}
           </div>

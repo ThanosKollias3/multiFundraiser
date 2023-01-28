@@ -1,7 +1,7 @@
 async function main() {
   const Fundraisers = await ethers.getContractFactory("Fundraisers")
   const accounts = await ethers.getSigners()
-  const fundraisers = await Fundraisers.deploy(accounts[0].address)
+  const fundraisers = await Fundraisers.deploy()
   await fundraisers.deployed()
 
   console.log(` Contract Deployed To: ${fundraisers.address}`)

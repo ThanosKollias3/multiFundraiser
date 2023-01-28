@@ -1,4 +1,3 @@
-import logo from "../assets/logo.png"
 import eth from "../assets/eth.svg"
 import Blockies from "react-blockies"
 import { useSelector, useDispatch } from "react-redux"
@@ -18,15 +17,24 @@ const Navbar = () => {
   const networkHandler = async (e) => {
     console.log(e.target.value)
     await window.ethereum.request({
-      method: 'wallet_switchEthereumChain',
+      method: "wallet_switchEthereumChain",
       params: [{ chainId: e.target.value }],
     })
   }
   return (
     <div className="exchange__header grid">
       <div className="exchange__header--brand flex">
-        <img src={logo} className="logo" alt="Tφ Logo"></img>
-        <h1>Twitch Fundraiser</h1>
+        <a
+          href={
+            config[chainId]
+              ? `${config[chainId].explorerURL}/address/${account}`
+              : `#`
+          }
+          target="_blank"
+          rel="noreferrer"
+        >
+          <h1>MultiFundraiser</h1>
+        </a>
       </div>
 
       <div className="exchange__header--networks flex">
